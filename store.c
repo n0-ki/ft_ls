@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dirflag.c                                          :+:      :+:    :+:   */
+/*   store.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:01:49 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/02 08:23:20 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/04 10:21:54 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,26 @@ t_file		*initfile(void)
 	f->next = NULL;
 
 	return (f);
+}
+
+void	getpath(t_file **h)
+{
+	t_file *parent;
+	t_file *child;
+	char	*tmp;
+
+	parent = *h;
+	while (parent)
+	{
+		child = parent->child;
+		parent->path = ft_strjoin(parent->name, "/");
+		while (child)
+		{
+			child->path = ft_strjoin(parent->path, child->name);
+			child = child->next;
+		}
+		parent = parent->next;
+	}
 }
 
 t_file		*storechildren(t_file *file, char *av, t_flags *flags)
@@ -89,7 +109,9 @@ t_file	*storestuff(char **av, t_data *ls, int x)
 		FILE = FILE->next;
 		x++;
 	}
+	getpath(&h);
 	ls_sort(&h, ls->flags);
 	return (h);
 }
 //get flags + verify them
+//get path, run through lstat, sortby time

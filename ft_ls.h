@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:03:52 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/02 08:23:12 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/04 09:58:41 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct	s_flags
 typedef struct s_file
 {
     char		*name;
+	char		*path;
 	//file inside of dir, will be set to null if no file inside of a dir. 
 	struct s_file *child;
 	//linked list inside linked list for recusive purposes
