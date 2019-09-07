@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:26:04 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/07 12:41:50 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/07 12:50:43 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,21 @@ void	lsl(t_data ls)
 	
 }
 
-void	simple_ls(t_data *ls, t_file *file)
+void	simple_ls(t_data *ls, t_file *file, int ac)
 {
 	while (file)
 	{
-		if (file->name)
+		if (file->name && ac != 1)
 			ft_putstr(file->name);
 		if (file->child)
 		{
-			ft_putstr(":\n");
-			simple_ls(ls, file->child);
+			ac != 1 ? ft_putstr(":\n") : 0;
+			simple_ls(ls, file->child, ac);
 			ft_putchar('\n');
 		}
-		if (!(file->child))
+		if (!(file->child) && ac != 1)
 			ft_putchar('\n');
+		ac++;		
 		file = file->next;
 	}
 }
@@ -45,7 +46,7 @@ int		main(int ac, char **av)
 	storecnt(ls, av, ac > 1 ? 1 : 0, ac);
 	x = ac - ls->dcnt;
 	ls->file = storestuff(av, ls, x);
-	ls->flags->cr == 1 ? 1+1 : simple_ls(ls, FILE);
+	ls->flags->cr == 1 ? 1+1 : simple_ls(ls, FILE, ac);
 }
 //sort directories & store them in linked list -- done
 //ls -r (reverse directories) -- done, along with print partially. use dcnt to check if multiple directories was typed, then decide to print : based on that.
