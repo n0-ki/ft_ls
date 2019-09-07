@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:03:52 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/04 09:58:41 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/07 12:41:26 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,40 +27,45 @@
 # include <time.h>
 # include <sys/ioctl.h>
 # include <stdio.h>
-# include <stdbool.h>
 
-# define FILE ls->file
+# define FILE 		ls->file
+# define SEC		stat.st_mtimespec.tv_sec
+# define NSEC		stat.st_mtimespec.tv_nsec
 
-typedef struct	s_flags
+typedef struct		s_flags
 {
-	bool		l;
-	//cr: capital R.
-	bool		cr;
-	bool		a;
-	bool		r;
-	bool		t;
-}				t_flags;
+	int				l;
+	int				cr;
+	int				a;
+	int				r;
+	int				t;
+}					t_flags;
 
-typedef struct s_file
+typedef struct 		s_file
 {
-    char		*name;
-	char		*path;
-	//file inside of dir, will be set to null if no file inside of a dir. 
-	struct s_file *child;
-	//linked list inside linked list for recusive purposes
-	struct s_file *next;
-}				t_file;
+    char			*name;
+	char			*path;
+	struct s_file 	*child;
+	struct stat		stat;
+	struct s_file 	*next;
+}					t_file;
 
-typedef struct	s_data
+typedef struct		s_data
 {
-	int			dcnt;
-	char		*wflags;
-	t_flags		*flags;
-	t_file		*file;
-}				t_data;
-t_file		*storestuff(char **av, t_data *ls, int x);
-t_file		*storechildren(t_file *file, char *av, t_flags *flags);
-void	    ls_sort(t_file **file, t_flags *f);
-t_file		*initfile(void);
+	char			*wflags;
+	t_flags			*flags;
+	t_file			*file;
+	int				dcnt;
+	int				flgcnt;
+}					t_data;
+
+t_file				*storestuff(char **av, t_data *ls, int x);
+void				storecnt(t_data *ls, char **av, int x, int ac);
+t_file				*storechildren(t_file *file, char *av, t_flags *flags);
+void				storeflags(t_data *ls, char *av);
+void	    		ls_sort(t_file **file, t_flags *f);
+t_file				*initfile(void);
+t_flags				*initflags(void);
+void				getps(t_file **h);
 
 #endif

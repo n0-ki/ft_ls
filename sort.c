@@ -6,11 +6,12 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 01:15:13 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/04 10:19:34 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/07 12:17:06 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
 
 void	split(t_file *source, t_file **fref, t_file **bref)
 {
@@ -32,42 +33,48 @@ void	split(t_file *source, t_file **fref, t_file **bref)
 	slow->next = NULL;
 }
 
-t_file	*revmerge(t_file *a, t_file *b, t_flags *f)
+t_file	*timemerge(t_file *a, t_file *b, t_flags *f, t_file *result)
 {
-	t_file *result = NULL;
-	if (a == NULL || !(a->name))
+	int		i;
+	
+	if (a == NULL || !a->name)
 		return (b); 
-	else if (b == NULL || !(b->name)) 
+	else if (b == NULL || !b->name) 
 		return (a);
-	if (ft_strcmp(a->name, b->name) >= 0)
+	if ((i = (f->r == 1 ? ft_longcmp(b->SEC, a->SEC) : ft_longcmp(a->SEC, b->SEC))) > 0)
 	{
 		result = a;
-        result->next = revmerge(a->next, b, f);
+    	result->next = timemerge(a->next, b, f, NULL);
+	}
+	else if (i == 0 && \
+	(f->r == 1 ? ft_longcmp(b->NSEC, a->NSEC) : ft_longcmp(a->NSEC, b->NSEC)) > 0)
+	{
+		result = a;
+    	result->next = timemerge(a->next, b, f, NULL);
 	}
 	else
 	{
 		result = b;
-        result->next = revmerge(a, b->next, f);
+        result->next = timemerge(a, b->next, f, NULL);
 	}
 	return (result);
 }
 
-t_file	*sortedmerge(t_file *a, t_file *b, t_flags *f)
+t_file	*alphamerge(t_file *a, t_file *b, t_flags *f, t_file *result)
 {
-	t_file *result = NULL;
 	if (a == NULL || !(a->name))
 		return (b); 
 	else if (b == NULL || !(b->name)) 
 		return (a);
-	if (ft_strcmp(a->name, b->name) <= 0)
+	if ((f->r == 1 ? ft_strcmp(b->name, a->name) : ft_strcmp(a->name, b->name)) <= 0)
 	{
 		result = a;
-        result->next = sortedmerge(a->next, b, f);
+        result->next = alphamerge(a->next, b, f, NULL);
 	}
 	else
 	{
 		result = b;
-        result->next = sortedmerge(a, b->next, f);
+        result->next = alphamerge(a, b->next, f, NULL);
 	}
 	return (result);
 }
@@ -82,7 +89,7 @@ void     ls_sort(t_file **file, t_flags *f)
 	b = NULL;
 	h = *file;
 	
-	if ((h == NULL) || (h->next == NULL))
+	if (h == NULL || h->next == NULL)
 		return ;
 	while (h->next && h->child && h->child->name)
 	{
@@ -94,9 +101,8 @@ void     ls_sort(t_file **file, t_flags *f)
 	split(h, &a, &b);
 	ls_sort(&a, f);
 	ls_sort(&b, f);
-	*file = f->r == false ? sortedmerge(a, b, f) : revmerge(a, b, f);
+	*file = f->t == 0 ? alphamerge(a, b, f, NULL) : timemerge(a, b, f, NULL);
 }
-//find greater file name, then push everything back
 /*
 t_file      *ls_sort(t_file *file)
 {
@@ -118,11 +124,4 @@ t_file      *ls_sort(t_file *file)
 	}
 	return (head);
 }
-void	swapnode(t_file *a, t_file *b)
-{
-	char	*tmp;
-	tmp = a->name;
-	a->name = b->name;
-	b->name = tmp;
-} 
 */

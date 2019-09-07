@@ -6,7 +6,7 @@
 #    By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/02/11 17:05:31 by nolakim           #+#    #+#              #
-#    Updated: 2019/03/17 20:57:24 by nolakim          ###   ########.fr        #
+#    Updated: 2019/09/05 08:44:52 by nolakim          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,9 @@ SRC		= ./ft_atoi.c ./ft_isalnum.c ./ft_isalpha.c ./ft_isascii.c ./ft_isdigit.c \
 			./ft_strsub.c ./ft_strjoin.c ./ft_strtrim.c ./ft_strsplit.c ./ft_itoa.c \
 			./ft_putstr.c ./ft_putendl.c ./ft_putnbr.c ./ft_putchar_fd.c ./ft_isspace.c \
 			./ft_putstr_fd.c ./ft_putendl_fd.c ./ft_putnbr_fd.c ./ft_iswspace.c ./ft_intlen.c \
-			./ft_lstadd.c ./ft_lstdel.c ./ft_lstdelone.c ./ft_lstiter.c ./ft_lstnew.c ./ft_lstmap.c ./get_next_line.c
-				
+			./ft_lstadd.c ./ft_lstdel.c ./ft_lstdelone.c ./ft_lstiter.c ./ft_lstnew.c ./ft_lstmap.c \
+			./get_next_line.c ./ft_longcmp.c
+
 INCLUDES = libft.h
 
 OBJECTS = *.o
