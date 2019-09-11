@@ -6,17 +6,17 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 01:15:13 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/07 12:17:06 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/09 09:02:37 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-
 void	split(t_file *source, t_file **fref, t_file **bref)
 {
-	t_file *fast;
-	t_file *slow;
+	t_file	*fast;
+	t_file	*slow;
+
 	slow = source;
 	fast = source->next;
 	while (fast != NULL)
@@ -28,7 +28,7 @@ void	split(t_file *source, t_file **fref, t_file **bref)
 			fast = fast->next;
 		}
 	}
-	*fref = source; 
+	*fref = source;
 	*bref = slow->next;
 	slow->next = NULL;
 }
@@ -36,26 +36,25 @@ void	split(t_file *source, t_file **fref, t_file **bref)
 t_file	*timemerge(t_file *a, t_file *b, t_flags *f, t_file *result)
 {
 	int		i;
-	
+
 	if (a == NULL || !a->name)
-		return (b); 
-	else if (b == NULL || !b->name) 
+		return (b);
+	else if (b == NULL || !b->name)
 		return (a);
-	if ((i = (f->r == 1 ? ft_longcmp(b->SEC, a->SEC) : ft_longcmp(a->SEC, b->SEC))) > 0)
+	if ((i = (SECSHORT)) > 0)
 	{
 		result = a;
-    	result->next = timemerge(a->next, b, f, NULL);
+		result->next = timemerge(a->next, b, f, NULL);
 	}
-	else if (i == 0 && \
-	(f->r == 1 ? ft_longcmp(b->NSEC, a->NSEC) : ft_longcmp(a->NSEC, b->NSEC)) > 0)
+	else if (i == 0 && (NANOSHORT) > 0)
 	{
 		result = a;
-    	result->next = timemerge(a->next, b, f, NULL);
+		result->next = timemerge(a->next, b, f, NULL);
 	}
 	else
 	{
 		result = b;
-        result->next = timemerge(a, b->next, f, NULL);
+		result->next = timemerge(a, b->next, f, NULL);
 	}
 	return (result);
 }
@@ -63,32 +62,32 @@ t_file	*timemerge(t_file *a, t_file *b, t_flags *f, t_file *result)
 t_file	*alphamerge(t_file *a, t_file *b, t_flags *f, t_file *result)
 {
 	if (a == NULL || !(a->name))
-		return (b); 
-	else if (b == NULL || !(b->name)) 
+		return (b);
+	else if (b == NULL || !(b->name))
 		return (a);
-	if ((f->r == 1 ? ft_strcmp(b->name, a->name) : ft_strcmp(a->name, b->name)) <= 0)
+	if ((f->r == 1 ? ft_strcmp(b->name, a->name) : \
+		ft_strcmp(a->name, b->name)) <= 0)
 	{
 		result = a;
-        result->next = alphamerge(a->next, b, f, NULL);
+		result->next = alphamerge(a->next, b, f, NULL);
 	}
 	else
 	{
 		result = b;
-        result->next = alphamerge(a, b->next, f, NULL);
+		result->next = alphamerge(a, b->next, f, NULL);
 	}
 	return (result);
 }
 
-void     ls_sort(t_file **file, t_flags *f)
+void	ls_sort(t_file **file, t_flags *f)
 {
 	t_file	*h;
-	t_file  *a;
-	t_file  *b;
+	t_file	*a;
+	t_file	*b;
 
 	a = NULL;
 	b = NULL;
 	h = *file;
-	
 	if (h == NULL || h->next == NULL)
 		return ;
 	while (h->next && h->child && h->child->name)
@@ -103,25 +102,3 @@ void     ls_sort(t_file **file, t_flags *f)
 	ls_sort(&b, f);
 	*file = f->t == 0 ? alphamerge(a, b, f, NULL) : timemerge(a, b, f, NULL);
 }
-/*
-t_file      *ls_sort(t_file *file)
-{
-	t_file *head;
-	t_file *chead;
-
-
-	head = file;
-	while (file)
-	{
-		chead = h->child;
-		linksort(head);
-		while (h->child)
-		{
-			linksort(chead);
-			h->child = h->child->next;
-		}
-		file = h->next;
-	}
-	return (head);
-}
-*/

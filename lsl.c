@@ -6,13 +6,34 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/09 10:30:56 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/09 11:32:55 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/11 08:49:21 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	print_perms(struct stat *filestats)
+void	printspecial(struct stat stat)
+{
+	ft_putnbr(4);
+	ft_putstr(",");
+	ft_putnbr(major(stat.st_rdev));
+	ft_putnbr(4);
+	ft_putnbr(minor(stat.st_rdev));
+}
+int		blockcount(t_file *file)
+{
+	int cnt;
+
+	cnt = 0;
+	while (file)
+	{
+		cnt += file->stat.st_blocks;
+		file = file->next;
+	}
+	return (cnt);
+}
+
+void	printperms(struct stat *filestats)
 {
 	if (S_ISDIR(filestats->st_mode))
 		ft_putstr("d");
@@ -35,4 +56,5 @@ void	print_perms(struct stat *filestats)
 	ft_putstr((filestats->st_mode & S_IROTH) ? "r" : "-");
 	ft_putstr((filestats->st_mode & S_IWOTH) ? "w" : "-");
 	ft_putstr((filestats->st_mode & S_IXOTH) ? "x" : "-");
+	ft_putstr("  ");
 }

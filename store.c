@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:01:49 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/07 12:41:20 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/11 08:16:47 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	getps(t_file **h)
 {
-	t_file *file;
-	t_file *child;
+	t_file	*file;
+	t_file	*child;
 
 	file = *h;
 	child = file->child;
@@ -31,11 +31,11 @@ void	getps(t_file **h)
 	}
 }
 
-t_file		*storechildren(t_file *file, char *av, t_flags *flags)
+t_file	*storechildren(t_file *file, char *av, t_flags *flags)
 {
-	DIR		*odir;
-	t_file	*h;
-	struct dirent *entry;
+	DIR				*odir;
+	t_file			*h;
+	struct dirent	*entry;
 
 	file->child = initfile();
 	h = file->child;
@@ -55,7 +55,9 @@ t_file		*storechildren(t_file *file, char *av, t_flags *flags)
 
 void	storeflags(t_data *ls, char *av)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (av[i])
 	{
 		if (av[i] == 'l')
@@ -68,13 +70,13 @@ void	storeflags(t_data *ls, char *av)
 			ls->flags->r = 1;
 		else if (av[i] == 't')
 			ls->flags->t = 1;
-	//	else
-		//usage:
+		//else if (av)
+		//	exit(1);
 		i++;
 	}
 }
 
-void		storecnt(t_data *ls, char **av, int x, int ac)
+void	storecnt(t_data *ls, char **av, int x, int ac)
 {
 	ls->flgcnt = 0;
 	ls->dcnt = 0;
@@ -95,14 +97,15 @@ void		storecnt(t_data *ls, char **av, int x, int ac)
 
 t_file	*storestuff(char **av, t_data *ls, int x)
 {
-	t_file	*h;
-	
+	t_file		*h;
+
 	FILE = initfile();
 	h = ls->file;
 	while (av[x] || ls->dcnt == 0)
 	{
 		FILE->name = ls->dcnt == 0 ? "." : ft_strdup(av[x]);
-		FILE->child = storechildren(FILE, ls->dcnt == 0 ? "." : av[x], ls->flags);
+		FILE->child = storechildren(FILE, ls->dcnt == 0 ? "." :\
+		av[x], ls->flags);
 		getps(&FILE);
 		FILE->next = initfile();
 		FILE = FILE->next;
@@ -113,5 +116,3 @@ t_file	*storestuff(char **av, t_data *ls, int x)
 	ls_sort(&h, ls->flags);
 	return (h);
 }
-//get flags + verify them
-//get path, run through lstat, sortby time
