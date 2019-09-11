@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:26:04 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/11 08:49:20 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/11 09:03:31 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	lsl(t_file  *h)
 	
 	file = h;
 	ft_putstr("total ");
-	ft_putstr(ft_itoa(blockcount(file->child)));
+	ft_putstr(ft_itoa(blockcount(file)));
 	ft_putchar('\n');
 	while (file)
 	{
@@ -31,10 +31,11 @@ void	lsl(t_file  *h)
 		ft_putstr(getpwuid(file->stat.st_uid)->pw_name);
 		ft_putstr("  ");
 		ft_putstr(getgrgid(file->stat.st_gid)->gr_name);
-		ft_putstr("  ");
+		file->stat.st_size > 9 ? (file->stat.st_size > 9999 ? ft_putchar(' ') : 
+		ft_putstr("  ")) : ft_putstr("\t");		
 		!S_ISCHR(file->stat.st_mode) || !S_ISBLK(file->stat.st_mode) ?
 		ft_putnbr(file->stat.st_size) : printspecial(file->stat);
-		file->stat.st_size > 9 ? ft_putchar('\t') : ft_putstr("\t\t");
+		ft_putchar(' ');
 		ft_putstr(time + 4);
 		ft_putchar(' ');
 		ft_putstr(file->name);

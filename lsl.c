@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/09 10:30:56 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/11 08:49:21 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/11 08:59:18 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,12 @@ void	printspecial(struct stat stat)
 	ft_putnbr(4);
 	ft_putnbr(minor(stat.st_rdev));
 }
-int		blockcount(t_file *file)
+int		blockcount(t_file *f)
 {
 	int cnt;
+	t_file *file;
 
+	file = f;
 	cnt = 0;
 	while (file)
 	{
