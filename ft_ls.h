@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:03:52 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/11 08:44:22 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/15 22:42:38 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@
 # define SECSHORT		f->r == 1 ? ft_longcmp(b->SEC, a->SEC) : ft_longcmp(a->SEC, b->SEC)
 # define NANOSHORT		f->r == 1 ? ft_longcmp(b->NSEC, a->NSEC) : ft_longcmp(a->NSEC, b->NSEC)
 
+enum				{ERRNO, USAGE, MALL_ERR};
+
 typedef struct		s_flags
 {
 	int				l;
@@ -58,19 +60,25 @@ typedef struct		s_data
 	t_flags			*flags;
 	t_file			*file;
 	int				dcnt;
-	int				flgcnt;
+	int				flg;
 }					t_data;
 
 t_file				*initfile(void);
 t_flags				*initflags(void);
 t_file				*storestuff(char **av, t_data *ls, int x);
 void				storecnt(t_data *ls, char **av, int x, int ac);
-t_file				*storechildren(t_file *file, char *av, t_flags *flags);
+t_file				*storechildren(t_file *file, char *dirname, t_flags *flags);
 void				storeflags(t_data *ls, char *av);
-void				getps(t_file **h);
+void				getps(t_file *h, t_data *ls);
 void	    		ls_sort(t_file **file, t_flags *f);
+void				lsl(t_file  *h, t_data *ls);
 void				printperms(struct stat *filestats);
 int					blockcount(t_file *file);
 void				printspecial(struct stat stat);
+t_file				*recursivestore(t_file *f, t_data *ls);
+char				*ls_get_path(char *dir, char *file);
+int					ls_error(char *s, int error);
+int					is_ls_hidden(char *s);
+
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 01:15:13 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/09 09:02:37 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/14 14:29:17 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	ls_sort(t_file **file, t_flags *f)
 	h = *file;
 	if (h == NULL || h->next == NULL)
 		return ;
-	while (h->next && h->child && h->child->name)
+	while (h->next && h->child)
 	{
 		ls_sort(&h->child, f);
 		if (h->next)

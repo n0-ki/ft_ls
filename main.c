@@ -6,77 +6,74 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:26:04 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/11 09:03:31 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/15 23:25:34 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	lsl(t_file  *h)
+void		ls_print(t_file *file, t_data *ls)
 {
-	t_file	*file;
-	char	*time;
+	//int		l;
 	
-	file = h;
-	ft_putstr("total ");
-	ft_putstr(ft_itoa(blockcount(file)));
-	ft_putchar('\n');
+	if (ls->flags->l == 1)
+		return(lsl(file->child, ls));
+	//l = ls_max_namelen(file);
 	while (file)
 	{
-		time = ctime(&file->stat.st_mtime);
-		time[16] = '\0';
-		printperms(&file->stat);
-		ft_putnbr(file->stat.st_nlink);
-		ft_putchar(' ');
-		ft_putstr(getpwuid(file->stat.st_uid)->pw_name);
-		ft_putstr("  ");
-		ft_putstr(getgrgid(file->stat.st_gid)->gr_name);
-		file->stat.st_size > 9 ? (file->stat.st_size > 9999 ? ft_putchar(' ') : 
-		ft_putstr("  ")) : ft_putstr("\t");		
-		!S_ISCHR(file->stat.st_mode) || !S_ISBLK(file->stat.st_mode) ?
-		ft_putnbr(file->stat.st_size) : printspecial(file->stat);
-		ft_putchar(' ');
-		ft_putstr(time + 4);
-		ft_putchar(' ');
-		ft_putstr(file->name);
-		ft_putchar('\n');
+		ft_putendl(file->name);
 		file = file->next;
 	}
 }
-void	simple_ls(t_data *ls, t_file *file)
+
+void		ls_print_recurs(t_file *file, t_data *ls)
 {
-	int dc;
+	t_file			*tmp;
 
-	dc = ls->dcnt;
-	while (file)
+	(ls->flags->l == 1) ? lsl(file, ls) : ls_print(file, ls);
+	tmp = file;
+	while (tmp)
 	{
-		if (file->name && !(dc <= 1 && file->child != NULL))
-			ft_putstr(file->name);
-		if (file->child)
+		if (S_ISDIR(tmp->stat.st_mode) && !(tmp->name[0] == '.' && ls->flags->a && is_ls_hidden(tmp->name)))
 		{
-			!(dc <= 1 && file->child != NULL) ? ft_putstr(":\n") : 0;
-			ls->flags->l == 1 ? lsl(file->child) : simple_ls(ls, file->child);
 			ft_putchar('\n');
+			ft_putstr(tmp->path);
+			ft_putstr(":\n");
 		}
-		if (!(file->child) && dc++ >= 0)
-			ft_putchar('\n');
-		file = file->next;
+		if (tmp->child)
+			ls_print_recurs(tmp->child, ls);
+		tmp = tmp->next;
 	}
 }
 
-
-int		main(int ac, char **av)
+int			main(int ac, char **av)
 {
 	int		x;
 	t_data	*ls;
 	
 	ls = (t_data *)malloc(sizeof(t_data));
 	storecnt(ls, av, ac > 1 ? 1 : 0, ac);
+	ls->flg = 0;
 	x = ac - ls->dcnt;
 	ls->file = storestuff(av, ls, x);
-	ls->flags->cr == 1 ? 1+1 : simple_ls(ls, FILE);
+	if (ls->flags->cr == 1)
+	{
+		recursivestore(ls->file, ls);
+		ls_print_recurs(ls->file, ls);
+		exit(1);
+	}
+	while (FILE)
+	{
+		ls->dcnt > 1 ? ft_putstr(FILE->path) : 0;
+		ls->dcnt > 1 ? ft_putendl(":") : 0;
+		ls_print(ls->flags->l == 1 ? FILE : FILE->child, ls);
+		FILE = FILE->next;
+	}
 }
-//handle file doesnt exist and incorrect flag
-//ls -l
-//ls -R (recursive print)
+/*Error management
+- non-existent file / directory
+- inaccessible file / directory
+- option not managed or nonexistent 
+- correct display of symbolic links.*/
+
 //every time you finish storing everything in a directory, print

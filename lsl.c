@@ -6,11 +6,23 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/09 10:30:56 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/11 08:59:18 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/15 22:45:11 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+void	printpwgr(t_file *file)
+{
+	ft_putstr(getpwuid(file->stat.st_uid)->pw_name);
+	ft_putstr("  ");
+	ft_putstr(getgrgid(file->stat.st_gid)->gr_name);
+	file->stat.st_size > 9 ? (file->stat.st_size > 9999 ? ft_putchar(' ') : \
+		ft_putstr("  ")) : ft_putstr("\t");
+	ft_putchar(' ');
+	!S_ISCHR(file->stat.st_mode) || !S_ISBLK(file->stat.st_mode) ? \
+	ft_putnbr(file->stat.st_size) : printspecial(file->stat);
+}
 
 void	printspecial(struct stat stat)
 {
@@ -20,6 +32,7 @@ void	printspecial(struct stat stat)
 	ft_putnbr(4);
 	ft_putnbr(minor(stat.st_rdev));
 }
+
 int		blockcount(t_file *f)
 {
 	int cnt;
@@ -59,4 +72,31 @@ void	printperms(struct stat *filestats)
 	ft_putstr((filestats->st_mode & S_IWOTH) ? "w" : "-");
 	ft_putstr((filestats->st_mode & S_IXOTH) ? "x" : "-");
 	ft_putstr("  ");
+}
+
+void	lsl(t_file  *h, t_data *ls)
+{
+	t_file	*file;
+	char	*time;
+	
+	file = h;
+	if (file && (ls->flags->a && !is_ls_hidden(file->name)))
+	{
+		ft_putstr("total ");
+		ft_putendl(ft_itoa(blockcount(file)));
+	}
+	while (file)
+	{
+		time = ctime(&file->stat.st_mtime);
+		time[16] = '\0';
+		printperms(&file->stat);
+		ft_putnbr(file->stat.st_nlink);
+		ft_putchar(' ');
+		printpwgr(file);
+		ft_putchar(' ');
+		ft_putstr(time + 4);
+		ft_putchar(' ');
+		ft_putendl(file->name);
+		file = file->next;
+	}
 }

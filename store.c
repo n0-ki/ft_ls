@@ -6,41 +6,76 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:01:49 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/11 08:16:47 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/15 22:26:51 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	getps(t_file **h)
+/* void	getps(t_file *h)
 {
 	t_file	*file;
 	t_file	*child;
 
-	file = *h;
+	file = h;
+	while (file)
+	{
+		if (!file->path)
+			file->path = ft_strjoin(file->name, "/");
+		else if (file->path)
+		{
+			file->path = ft_strjoin(file->path, file->name);
+			file->path = ft_strjoin(file->path, "/");
+		}
+		ft_bzero(&file->stat, sizeof(struct stat));
+		lstat(file->path, &file->stat);
+		if (file->child)
+			getps(file->child);
+		file = file->next;
+	}
+}*/
+
+void		getps(t_file *h, t_data *ls)
+{
+	t_file	*file;
+	t_file	*child;
+
+	file = h;
 	child = file->child;
-	file->path = ft_strjoin(file->name, "/");
+	if (!file->path && file->name)
+		file->path = ft_strjoin(file->name, "/");
+	else if (file->path)
+		file->path = ft_strjoin(file->path, "/");
 	ft_bzero(&file->stat, sizeof(struct stat));
 	lstat(file->path, &file->stat);
 	while (child)
 	{
-		child->path = ft_strjoin(file->path, child->name);
+		if (!child->path)
+			child->path = ft_strjoin(file->path, child->name);
 		ft_bzero(&child->stat, sizeof(struct stat));
 		lstat(child->path, &child->stat);
+		if (child->child)
+			getps(child->child, ls);
 		child = child->next;
 	}
 }
 
-t_file	*storechildren(t_file *file, char *av, t_flags *flags)
+t_file	*storechildren(t_file *file, char *dirname, t_flags *flags)
 {
 	DIR				*odir;
 	t_file			*h;
 	struct dirent	*entry;
 
-	file->child = initfile();
+	if (!file->child)
+		file->child = initfile();
 	h = file->child;
-	if (!(odir = opendir(av)))
-		exit(1);
+	if (!(odir = opendir(dirname)))
+	{
+		if (flags->cr == 0)
+			exit(1);
+		else
+			return (NULL);
+	}
 	while ((entry = readdir(odir)))
 	{
 		if ((entry->d_name[0] != '.' && flags->a == 0) || flags->a == 1)
@@ -49,7 +84,6 @@ t_file	*storechildren(t_file *file, char *av, t_flags *flags)
 		file->child = file->child->next;
 	}
 	closedir(odir);
-	file->child->next = initfile();
 	return (h);
 }
 
@@ -78,7 +112,6 @@ void	storeflags(t_data *ls, char *av)
 
 void	storecnt(t_data *ls, char **av, int x, int ac)
 {
-	ls->flgcnt = 0;
 	ls->dcnt = 0;
 	ls->flags = initflags();
 	if (ac == 1)
@@ -86,7 +119,6 @@ void	storecnt(t_data *ls, char **av, int x, int ac)
 	while (av[x] && av[x][0] == '-')
 	{
 		storeflags(ls, av[x++]);
-		ls->flgcnt++;
 	}
 	while (av[x])
 	{
@@ -106,7 +138,7 @@ t_file	*storestuff(char **av, t_data *ls, int x)
 		FILE->name = ls->dcnt == 0 ? "." : ft_strdup(av[x]);
 		FILE->child = storechildren(FILE, ls->dcnt == 0 ? "." :\
 		av[x], ls->flags);
-		getps(&FILE);
+		getps(ls->file, ls);
 		FILE->next = initfile();
 		FILE = FILE->next;
 		if (ls->dcnt == 0)
