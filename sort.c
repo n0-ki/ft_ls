@@ -6,11 +6,36 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 01:15:13 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/14 14:29:17 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/16 07:14:30 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+void	getps(t_file *h, t_data *ls)
+{
+	t_file	*file;
+	t_file	*child;
+
+	file = h;
+	child = file->child;
+	if (!file->path && file->name)
+		file->path = ft_strjoin(file->name, "/");
+	else if (file->path)
+		file->path = ft_strjoin(file->path, "/");
+	ft_bzero(&file->stat, sizeof(struct stat));
+	lstat(file->path, &file->stat);
+	while (child)
+	{
+		if (!child->path)
+			child->path = ft_strjoin(file->path, child->name);
+		ft_bzero(&child->stat, sizeof(struct stat));
+		lstat(child->path, &child->stat);
+		if (child->child)
+			getps(child->child, ls);
+		child = child->next;
+	}
+}
 
 void	split(t_file *source, t_file **fref, t_file **bref)
 {

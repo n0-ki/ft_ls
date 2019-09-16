@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/09 10:30:56 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/15 22:45:11 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/16 07:10:12 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@ void	printpwgr(t_file *file)
 	ft_putstr(getpwuid(file->stat.st_uid)->pw_name);
 	ft_putstr("  ");
 	ft_putstr(getgrgid(file->stat.st_gid)->gr_name);
-	file->stat.st_size > 9 ? (file->stat.st_size > 9999 ? ft_putchar(' ') : \
-		ft_putstr("  ")) : ft_putstr("\t");
+	if (file->stat.st_size > 9)
+		(file->stat.st_size > 9999 ? ft_putchar(' ') : ft_putstr("  "));
+	else
+		ft_putstr("\t");
 	ft_putchar(' ');
 	!S_ISCHR(file->stat.st_mode) || !S_ISBLK(file->stat.st_mode) ? \
 	ft_putnbr(file->stat.st_size) : printspecial(file->stat);
@@ -35,8 +37,8 @@ void	printspecial(struct stat stat)
 
 int		blockcount(t_file *f)
 {
-	int cnt;
-	t_file *file;
+	t_file	*file;
+	int		cnt;
 
 	file = f;
 	cnt = 0;
@@ -74,19 +76,21 @@ void	printperms(struct stat *filestats)
 	ft_putstr("  ");
 }
 
-void	lsl(t_file  *h, t_data *ls)
+void	lsl(t_file *h)
 {
 	t_file	*file;
 	char	*time;
-	
+
 	file = h;
-	if (file && (ls->flags->a && !is_ls_hidden(file->name)))
+	if (file && file->name)
 	{
 		ft_putstr("total ");
 		ft_putendl(ft_itoa(blockcount(file)));
 	}
-	while (file)
+	while (file && file->name)
 	{
+		if (S_ISLNK(file->stat.st_mode))
+			file->name = ft_strjoin(file->name, ft_readlink(file->path));
 		time = ctime(&file->stat.st_mtime);
 		time[16] = '\0';
 		printperms(&file->stat);

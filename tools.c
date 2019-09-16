@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/05 07:12:17 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/15 23:16:01 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/16 07:14:04 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,37 +43,32 @@ int			ls_error(char *s, int error)
 	return (0);
 }
 
-t_file	*recursivestore(t_file *f, t_data *ls)
+void		ls_free_files(t_file *file, t_data *ls)
 {
-	t_file	*file;
-
-	file = f;
 	while (file)
 	{
-		if (S_ISDIR(file->stat.st_mode) && !file->child && !(ls->flags->a && is_ls_hidden(file->name)))
-		{
-			file->child = storechildren(file, file->path, ls->flags);
-			getps(file, ls);
-			ls_sort(&file->child, ls->flags);
-		}
+		if (file->path)
+			free(file->path);
+		if (file->name)
+			free(file->name);
 		if (file->child)
-			file->child = recursivestore(file->child, ls);
+			ls_free_files(file->child, ls);
+		free(file);
 		file = file->next;
 	}
-	return (f);
+	file = NULL;
 }
 
 t_file		*initfile(void)
 {
 	t_file *f;
-	
+
 	if (!(f = (t_file *)malloc(sizeof(t_file))))
-		exit(-1);
+		ls_error("", MALL_ERR);
 	f->child = NULL;
 	f->name = NULL;
 	f->path = NULL;
 	f->next = NULL;
-
 	return (f);
 }
 
@@ -82,6 +77,7 @@ t_flags		*initflags(void)
 	t_flags *f;
 
 	if (!(f = (t_flags *)malloc(sizeof(t_flags))))
+		ls_error("", MALL_ERR);
 	f->l = 0;
 	f->r = 0;
 	f->cr = 0;
