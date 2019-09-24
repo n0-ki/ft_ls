@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/16 01:46:28 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/16 01:51:08 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/23 16:02:48 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 char		*ft_readlink(char *path)
 {
 	char	buf[128];
-	ssize_t len;
-	ssize_t buffsize;
+	size_t len;
+	size_t buffsize;
 
 	buffsize = 128;
 	buf[0] = ' ';

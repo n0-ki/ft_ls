@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/05 07:12:17 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/16 07:14:04 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/23 17:12:41 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@ int			is_ls_hidden(char *s)
 {
 	return ((s[0] == '.' && s[1] == '\0') || \
 	(s[0] == '.' && s[1] == '.' && s[2] == '\0'));
+}
+
+int			ls_lstat_error(t_file *file)
+{
+	ls_free_files(file);
+	exit(EXIT_FAILURE);
 }
 
 int			ls_error(char *s, int error)
@@ -43,20 +49,30 @@ int			ls_error(char *s, int error)
 	return (0);
 }
 
-void		ls_free_files(t_file *file, t_data *ls)
+void		ls_free_files(t_file *file)
 {
+
 	while (file)
 	{
-		if (file->path)
-			free(file->path);
-		if (file->name)
-			free(file->name);
-		if (file->child)
-			ls_free_files(file->child, ls);
+		ft_strdel(&file->path);
+		file->name && file->name[0] != '\0' ? ft_strdel(&file->name) : 0;
+		file->name = NULL;
+		file->path = NULL;
+		if (file->child != NULL)
+			ls_free_files(file->child);
 		free(file);
 		file = file->next;
 	}
-	file = NULL;
+}
+
+t_file		*addfile(t_file *file)
+{
+	t_file	*new;
+
+	new = initfile();
+	file->next = new;
+	file = file->next;
+	return (file);
 }
 
 t_file		*initfile(void)

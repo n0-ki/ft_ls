@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/09 10:30:56 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/16 07:10:12 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/23 17:02:59 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,21 +76,23 @@ void	printperms(struct stat *filestats)
 	ft_putstr("  ");
 }
 
-void	lsl(t_file *h)
+void	lsl(t_file *file)
 {
-	t_file	*file;
 	char	*time;
+	char	*link;
 
-	file = h;
 	if (file && file->name)
 	{
 		ft_putstr("total ");
-		ft_putendl(ft_itoa(blockcount(file)));
+		ft_putendl(time = ft_itoa(blockcount(file)));
+		free(time);
 	}
 	while (file && file->name)
 	{
+		link = NULL;
 		if (S_ISLNK(file->stat.st_mode))
-			file->name = ft_strjoin(file->name, ft_readlink(file->path));
+			file->name = ft_strjoin(file->name, \
+			link = ft_readlink(file->path));
 		time = ctime(&file->stat.st_mtime);
 		time[16] = '\0';
 		printperms(&file->stat);
@@ -102,5 +104,7 @@ void	lsl(t_file *h)
 		ft_putchar(' ');
 		ft_putendl(file->name);
 		file = file->next;
+		if (link)
+			free(link);
 	}
 }

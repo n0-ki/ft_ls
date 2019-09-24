@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:26:04 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/16 11:29:52 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/23 17:06:21 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,17 @@ void		ls_print(t_file *file, t_data *ls)
 	while (file)
 	{
 		ft_putendl(file->name);
+		file = file->next;
+	}
+}
+
+void		simple_ls(t_file *file, t_data *ls)
+{
+	while (file)
+	{
+		ls->dcnt > 1 ? ft_putstr(file->path) : 0;
+		ls->dcnt > 1 ? ft_putendl(":") : 0;
+		ls_print(ls->flags->l == 1 ? file : file->child, ls);
 		file = file->next;
 	}
 }
@@ -52,6 +63,7 @@ int			main(int ac, char **av)
 
 	if (!(ls = (t_data *)malloc(sizeof(t_data))))
 		ls_error("", MALL_ERR);
+	ls->file = initfile();
 	storecnt(ls, av, ac > 1 ? 1 : 0, ac);
 	ls->flg = 0;
 	x = ac - ls->dcnt;
@@ -60,21 +72,16 @@ int			main(int ac, char **av)
 	{
 		recursivestore(ls->file, ls);
 		ls_print_recurs(ls->file, ls, 0);
-		ls_free_files(ls->file, ls);
-		sleep(15);
+		ls_free_files(ls->file);
+		sleep(6);
 		exit(1);
 	}
-	while (FILE)
-	{
-		ls->dcnt > 1 ? ft_putstr(FILE->path) : 0;
-		ls->dcnt > 1 ? ft_putendl(":") : 0;
-		ls_print(ls->flags->l == 1 ? FILE : FILE->child, ls);
-		FILE = FILE->next;
-		ls_free_files(ls->file, ls);
-	}
+	else
+		simple_ls(ls->file, ls);
+  	ls_free_files(ls->file);
 	free(ls->flags);
 	free(ls);
-	sleep(15);
+	sleep(6);
 }
 /*
 **Error management

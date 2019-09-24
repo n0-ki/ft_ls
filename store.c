@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:01:49 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/16 07:13:28 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/23 16:41:44 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,17 @@ t_file		*storechildren(t_file *file, char *dirname, t_flags *flags)
 	t_file			*h;
 	struct dirent	*entry;
 
-	if (!file->child)
-		file->child = initfile();
+	file->child = (file->child) ? NULL : initfile();
 	h = file->child;
 	if (!(odir = opendir(dirname)))
 		ls_error(dirname, ERRNO);
 	while ((entry = readdir(odir)))
 	{
 		if ((entry->d_name[0] != '.' && flags->a == 0) || flags->a == 1)
+		{
 			file->child->name = ft_strdup(entry->d_name);
-		file->child->next = initfile();
-		file->child = file->child->next;
+			file->child = addfile(file->child);
+		}
 	}
 	closedir(odir);
 	return (h);
@@ -77,7 +77,7 @@ void		storeflags(t_data *ls, char *av)
 			ft_putstr_fd("ft_ls: illegal option -- ", 2);
 			ft_putchar_fd(av[i], 2);
 			ft_putchar_fd('\n', 2);
-			ft_putendl_fd("usage: ft_ls [-alRrt1] [file ...]", 2);
+			ft_putendl_fd("usage: ft_ls [-alRrt] [file ...]", 2);
 			exit(EXIT_FAILURE);
 		}
 		i++;
@@ -103,20 +103,17 @@ t_file		*storestuff(char **av, t_data *ls, int x)
 {
 	t_file	*h;
 
-	FILE = initfile();
 	h = ls->file;
 	while (av[x] || ls->dcnt == 0)
 	{
-		FILE->name = ls->dcnt == 0 ? "." : ft_strdup(av[x]);
-		FILE->child = storechildren(FILE, ls->dcnt == 0 ? "." : \
-		av[x], ls->flags);
+		FILE->name = ls->dcnt == 0 ? ft_strdup(".\0") : ft_strdup(av[x]);
+		FILE->child = storechildren(FILE, ls->dcnt == 0 ? "." : av[x], ls->flags);
 		getps(ls->file, ls);
-		FILE->next = initfile();
-		FILE = FILE->next;
-		if (ls->dcnt == 0)
+		if (ls->dcnt == 0 || !av[x+1])
 			break ;
+		FILE = addfile(FILE);
 		x++;
 	}
-	ls_sort(&h, ls->flags);
+	ls_sort(ls->dcnt <= 1 ? &h->child : &h, ls->flags);
 	return (h);
 }

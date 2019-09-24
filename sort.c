@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 01:15:13 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/16 07:14:30 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/23 12:55:40 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ void	getps(t_file *h, t_data *ls)
 		if (!child->path)
 			child->path = ft_strjoin(file->path, child->name);
 		ft_bzero(&child->stat, sizeof(struct stat));
-		lstat(child->path, &child->stat);
+		if (child->name)
+			lstat(child->path, &child->stat);
 		if (child->child)
 			getps(child->child, ls);
 		child = child->next;

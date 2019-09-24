@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 17:03:52 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/16 11:26:48 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/23 16:28:43 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,13 @@ typedef struct 		s_file
 {
     char			*name;
 	char			*path;
-	struct s_file 	*child;
 	struct stat		stat;
+	struct s_file 	*child;
 	struct s_file 	*next;
 }					t_file;
 
 typedef struct		s_data
 {
-	char			*wflags;
 	t_flags			*flags;
 	t_file			*file;
 	int				dcnt;
@@ -64,6 +63,8 @@ typedef struct		s_data
 }					t_data;
 
 t_file				*initfile(void);
+int					ls_lstat_error(t_file *file);
+t_file				*addfile(t_file *file);
 t_flags				*initflags(void);
 t_file				*storestuff(char **av, t_data *ls, int x);
 void				storecnt(t_data *ls, char **av, int x, int ac);
@@ -71,13 +72,13 @@ t_file				*storechildren(t_file *file, char *dirname, t_flags *flags);
 void				storeflags(t_data *ls, char *av);
 void				getps(t_file *h, t_data *ls);
 void	    		ls_sort(t_file **file, t_flags *f);
-void				lsl(t_file  *h);
+void				lsl(t_file  *file);
 void				printperms(struct stat *filestats);
 int					blockcount(t_file *file);
 void				printspecial(struct stat stat);
 t_file				*recursivestore(t_file *f, t_data *ls);
 char				*ls_get_path(char *dir, char *file);
 int					ls_error(char *s, int error);
-void				ls_free_files(t_file *t_file, t_data *ls);
+void				ls_free_files(t_file *file);
 int					is_ls_hidden(char *s);
 #endif
