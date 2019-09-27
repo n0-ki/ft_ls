@@ -6,7 +6,7 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:01:49 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/23 16:41:44 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/27 03:05:07 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ t_file		*recursivestore(t_file *f, t_data *ls)
 		if (S_ISDIR(file->stat.st_mode) && !file->child \
 		&& !(ls->flags->a && is_ls_hidden(file->name)))
 		{
-			file->child = storechildren(file, file->path, ls->flags);
-			getps(file, ls);
+			file->child = storechildren(file->child, file->path, ls->flags);
+			getps(file, ls, NULL, NULL);
 			ls_sort(&file->child, ls->flags);
 		}
 		if (file->child)
@@ -39,16 +39,20 @@ t_file		*storechildren(t_file *file, char *dirname, t_flags *flags)
 	t_file			*h;
 	struct dirent	*entry;
 
-	file->child = (file->child) ? NULL : initfile();
-	h = file->child;
 	if (!(odir = opendir(dirname)))
 		ls_error(dirname, ERRNO);
 	while ((entry = readdir(odir)))
 	{
 		if ((entry->d_name[0] != '.' && flags->a == 0) || flags->a == 1)
 		{
-			file->child->name = ft_strdup(entry->d_name);
-			file->child = addfile(file->child);
+			if (file)
+				file = addfile(file);
+			else
+			{
+				file = initfile();
+				h = file;
+			}
+			file->name = ft_strdup(entry->d_name);
 		}
 	}
 	closedir(odir);
@@ -103,13 +107,15 @@ t_file		*storestuff(char **av, t_data *ls, int x)
 {
 	t_file	*h;
 
-	h = ls->file;
+	FILE = initfile();
+	h = FILE;
 	while (av[x] || ls->dcnt == 0)
 	{
 		FILE->name = ls->dcnt == 0 ? ft_strdup(".\0") : ft_strdup(av[x]);
-		FILE->child = storechildren(FILE, ls->dcnt == 0 ? "." : av[x], ls->flags);
-		getps(ls->file, ls);
-		if (ls->dcnt == 0 || !av[x+1])
+		FILE->child = storechildren(FILE->child, ls->dcnt == 0 \
+		? FILE->name : av[x], ls->flags);
+		getps(FILE, ls, NULL, NULL);
+		if (ls->dcnt == 0 || !av[x + 1])
 			break ;
 		FILE = addfile(FILE);
 		x++;

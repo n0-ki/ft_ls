@@ -6,23 +6,26 @@
 /*   By: nolakim <nolakim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 01:15:13 by nolakim           #+#    #+#             */
-/*   Updated: 2019/09/23 12:55:40 by nolakim          ###   ########.fr       */
+/*   Updated: 2019/09/26 17:54:29 by nolakim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	getps(t_file *h, t_data *ls)
+void	getps(t_file *h, t_data *ls, t_file *file, t_file *child)
 {
-	t_file	*file;
-	t_file	*child;
+	char	*tmp;
 
 	file = h;
 	child = file->child;
 	if (!file->path && file->name)
 		file->path = ft_strjoin(file->name, "/");
 	else if (file->path)
+	{
+		tmp = file->path;
 		file->path = ft_strjoin(file->path, "/");
+		free(tmp);
+	}
 	ft_bzero(&file->stat, sizeof(struct stat));
 	lstat(file->path, &file->stat);
 	while (child)
@@ -33,7 +36,7 @@ void	getps(t_file *h, t_data *ls)
 		if (child->name)
 			lstat(child->path, &child->stat);
 		if (child->child)
-			getps(child->child, ls);
+			getps(child->child, ls, NULL, NULL);
 		child = child->next;
 	}
 }
@@ -67,12 +70,12 @@ t_file	*timemerge(t_file *a, t_file *b, t_flags *f, t_file *result)
 		return (b);
 	else if (b == NULL || !b->name)
 		return (a);
-	if ((i = (SECSHORT)) > 0)
+	if ((i = (SECSHORT : ft_longcmp(a->SEC, b->SEC))) > 0)
 	{
 		result = a;
 		result->next = timemerge(a->next, b, f, NULL);
 	}
-	else if (i == 0 && (NANOSHORT) > 0)
+	else if (i == 0 && (NANOSHORT : ft_longcmp(a->NSEC, b->NSEC)) > 0)
 	{
 		result = a;
 		result->next = timemerge(a->next, b, f, NULL);
